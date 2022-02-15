@@ -18,6 +18,17 @@ describe("GET /api/articles/:article_id ", () => {
         const { body } = response;
         console.log(body)
         expect(body.article).toBeInstanceOf(Object);
+        expect(body.article).toEqual(
+          expect.objectContaining(
+            {
+              title: expect.any(String),
+              topic: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number)
+            }
+          ))
       });
   });
-});
+})
