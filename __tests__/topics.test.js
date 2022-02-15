@@ -21,7 +21,7 @@ describe("GET /api/topics ", () => {
           expect(topic).toEqual(
             expect.objectContaining({
               slug: expect.any(String),
-              description: expect.any(String),
+              description: expect.any(String)
             })
           );
         });

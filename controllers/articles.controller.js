@@ -1,9 +1,12 @@
 const {selectArticleID} = require("../models/articles.model");
 
-exports.getArticleID = (req, res) => {
+exports.getArticleID = async (req, res, next) => {
+    console.log('---- INSIDE CONTROLLER ----')
+    try {
     const { article_id } = req.params;
-    selectArticleID(article_id).then((article) => {
-    res.status(200).send({ article });
-    console.log(article)
-  });
-};
+    const article = await selectArticleID(article_id)
+    res.status(200).send({ article })
+    } catch (err) {
+        next(err);
+      }
+  };

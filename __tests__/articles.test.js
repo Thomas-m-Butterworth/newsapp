@@ -16,8 +16,8 @@ describe("GET /api/articles/:article_id ", () => {
       .get("/api/articles/3")
       .then((response) => {
         const { body } = response;
-        console.log(body)
         expect(body.article).toBeInstanceOf(Object);
+        expect(200);
         expect(body.article).toEqual(
           expect.objectContaining(
             {
@@ -32,3 +32,13 @@ describe("GET /api/articles/:article_id ", () => {
       });
   });
 })
+
+// ERROR HANDLING
+describe("GET /api/articles/:article_id ERRORS", () => {
+  test("returns a status 404 and not found an article_id that doesn't exist in the database", async () => {
+    const test = await request(app)
+      .get("/api/articles/9481")
+      .expect(404);
+      expect(test.body.msg).toBe("No article found for article_id: 9481")
+      })
+  })
