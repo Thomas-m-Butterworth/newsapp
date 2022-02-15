@@ -10,21 +10,14 @@ beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
 // -- TESTS --
-describe("GET /api/topics ", () => {
+describe("GET /api/articles/:article_id ", () => {
   it("returns an object", () => {
     return request(app)
-      .get("/api/topics")
+      .get("/api/articles/3")
       .then((response) => {
         const { body } = response;
-        expect(body.topics).toBeInstanceOf(Object);
-        body.topics.forEach((topic) => {
-          expect(topic).toEqual(
-            expect.objectContaining({
-              slug: expect.any(String),
-              description: expect.any(String),
-            })
-          );
-        });
+        console.log(body)
+        expect(body.article).toBeInstanceOf(Object);
       });
   });
 });
