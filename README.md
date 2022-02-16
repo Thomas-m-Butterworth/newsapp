@@ -14,6 +14,6 @@ PGDATBASE=nc_news
 
 This can be acheived with the following terminal command:
 ```
-echo "PGDATBASE=nc_news" > .env.development
+echo "PGDATABASE=nc_news" > .env.development
 echo "PGDATABASE=nc_news_test" > .env.test
 ```
