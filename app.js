@@ -1,13 +1,14 @@
 const express = require("express");
 const { getTopics } = require("./controllers/topics.controller");
-const { getArticleID } = require("./controllers/articles.controller");
+const { getArticleID, getAllArticles } = require("./controllers/articles.controller");
 const { PSQLerror, handle500s, customError } = require('./error')
 const app = express();
 
 // GET REQUESTS
 // GET all Topics
-app.get('/api/topics', getTopics);
-// GET Article ID
+app.get('/api/topics', getTopics);  // All
+// ARTICLE ENDOINTS
+app.get('/api/articles', getAllArticles)    // All
 app.get('/api/articles/:article_id', getArticleID);
 
 // ERROR HANDLING
