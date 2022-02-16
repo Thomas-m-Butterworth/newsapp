@@ -1,6 +1,7 @@
 const express = require("express");
 const { getTopics } = require("./controllers/topics.controller");
 const { getArticleID } = require("./controllers/articles.controller");
+const { PSQLerror, handle500s, customError } = require('./error')
 const app = express();
 
 // GET REQUESTS
@@ -10,12 +11,9 @@ app.get('/api/topics', getTopics);
 app.get('/api/articles/:article_id', getArticleID);
 
 // ERROR HANDLING
-app.use((err, req, res, next) => {
-    if (err.status && err.msg) {
-      res.status(err.status).send({ msg: err.msg });
-    } else next(err);
-  });
-
+app.use(PSQLerror)
+app.use(customError)
+app.use(handle500s)
 
 // 404 Handling on all unknown entries
 app.all("*", (req, res) => {

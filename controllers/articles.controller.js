@@ -1,7 +1,6 @@
 const {selectArticleID} = require("../models/articles.model");
 
 exports.getArticleID = async (req, res, next) => {
-    console.log('---- INSIDE CONTROLLER ----')
     try {
     const { article_id } = req.params;
     const article = await selectArticleID(article_id)

@@ -41,4 +41,10 @@ describe("GET /api/articles/:article_id ERRORS", () => {
       .expect(404);
       expect(test.body.msg).toBe("No article found for article_id: 9481")
       })
+  test("returns a 400 error when an invalid ID is used", async () => {
+    const test = await request(app)
+      .get("/api/articles/not-valid-id")
+      .expect(400);
+      expect(test.body.msg).toBe("Bad request")
+      })
   })
