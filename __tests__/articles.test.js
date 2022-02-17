@@ -27,7 +27,7 @@ describe("GET /api/articles/:article_id ", () => {
               author: "icellusedkars",
               body: "some gifs",
               created_at: "2020-11-03T09:12:00.000Z",
-              votes: 0,
+              votes: 0, 
             }
           ))
       });
