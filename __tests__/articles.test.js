@@ -36,7 +36,7 @@ describe("GET /api/articles/:article_id ", () => {
 })
 
 // GET ALL Articles Testing
-describe.only("GET /api/articles ", () => {
+describe("GET /api/articles ", () => {
   it("returns an object of articles", () => {
     return request(app)
       .get("/api/articles")
