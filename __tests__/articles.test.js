@@ -4,6 +4,7 @@ const testData = require("../db/data/test-data/index.js");
 const seed = require("../db/seeds/seed.js");
 const request = require("supertest");
 const app = require("../app");
+require('jest-sorted')
 
 // Ensure that the database starts and ends correctly
 beforeEach(() => seed(testData));
@@ -34,7 +35,7 @@ describe("GET /api/articles/:article_id ", () => {
 })
 
 // GET ALL Articles Testing
-describe.only("GET /api/articles ", () => {
+describe("GET /api/articles ", () => {
   it("returns an object of articles", () => {
     return request(app)
       .get("/api/articles")
@@ -55,6 +56,14 @@ describe.only("GET /api/articles ", () => {
         });
       });
   });
+  it('is displayed in decending order by date_created', () => {
+    return request(app)
+      .get("/api/articles")
+      .then((response) => {
+        const { body } = response;
+        expect([{body}]).toBeSortedBy('date created', {descending: true})
+      })
+  })
 });
 
 // ERROR HANDLING

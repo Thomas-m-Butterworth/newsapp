@@ -13,13 +13,11 @@ exports.selectArticleID = async (article_id) => {
 };
 
 exports.selectAllArticles = async () => {
-    console.log('----- IN MODEL -----')
     const articles = await db
         .query(`
             SELECT * FROM articles
             ORDER BY created_at DESC;
                     `)
-        console.log(articles.rows)
         const results = articles.rows
         return results
 }
