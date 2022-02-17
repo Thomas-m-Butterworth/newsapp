@@ -27,7 +27,8 @@ describe("GET /api/articles/:article_id ", () => {
               author: "icellusedkars",
               body: "some gifs",
               created_at: "2020-11-03T09:12:00.000Z",
-              votes: 0, 
+              votes: 0,
+              comment_count: 2,
             }
           ))
       });
@@ -44,14 +45,17 @@ describe("GET /api/articles ", () => {
         expect(body.articles).toBeInstanceOf(Object);
         body.articles.forEach((article) => {
           expect(article).toEqual(
-            expect.objectContaining({
+            expect.objectContaining(
+              {
               author: expect.any(String),
               title: expect.any(String),
               article_id: expect.any(Number),
               topic: expect.any(String),
               created_at: expect.any(String),
               votes: expect.any(Number),
-            })
+              comment_count: expect.any(Number),
+            }
+            )
           );
         });
       });
@@ -61,7 +65,7 @@ describe("GET /api/articles ", () => {
       .get("/api/articles")
       .then((response) => {
         const { body } = response;
-        expect([{body}]).toBeSortedBy('date created', {descending: true})
+        expect([{ body }]).toBeSortedBy('date created', { descending: true })
       })
   })
 });
