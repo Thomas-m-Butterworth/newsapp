@@ -11,3 +11,13 @@ exports.selectArticleID = async (article_id) => {
     } 
     return article
 };
+
+exports.selectAllArticles = async () => {
+    const articles = await db
+        .query(`
+            SELECT * FROM articles
+            ORDER BY created_at DESC;
+                    `)
+        const results = articles.rows
+        return results
+}
