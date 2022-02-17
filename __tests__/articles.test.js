@@ -28,6 +28,7 @@ describe("GET /api/articles/:article_id ", () => {
               body: "some gifs",
               created_at: "2020-11-03T09:12:00.000Z",
               votes: 0,
+              comment_count: 2,
             }
           ))
       });
@@ -128,16 +129,20 @@ describe("GET /api/articles ", () => {
         // [TO DO] ADD length check on body
         body.articles.forEach((article) => {
           expect(article).toEqual(
-            expect.objectContaining({
+            expect.objectContaining(
+              {
               author: expect.any(String),
               title: expect.any(String),
               article_id: expect.any(Number),
               topic: expect.any(String),
               created_at: expect.any(String),
               votes: expect.any(Number),
-            })
+              comment_count: expect.any(Number),
+            }
+            )
           );
         });
+        expect(body.articles[0].comment_count).toBe(2)
       });
   });
   it('is displayed in decending order by date_created', () => {
