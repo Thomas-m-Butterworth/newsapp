@@ -36,7 +36,7 @@ describe("GET /api/articles/:article_id ", () => {
 })
 
 // GET ALL Articles Testing
-describe("GET /api/articles ", () => {
+describe.only("GET /api/articles ", () => {
   it("returns an object of articles", () => {
     return request(app)
       .get("/api/articles")
@@ -58,6 +58,7 @@ describe("GET /api/articles ", () => {
             )
           );
         });
+        expect(body.articles[0].comment_count).toBe(2)
       });
   });
   it('is displayed in decending order by date_created', () => {
