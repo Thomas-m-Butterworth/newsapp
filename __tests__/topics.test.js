@@ -11,17 +11,17 @@ afterAll(() => db.end());
 
 // -- TESTS --
 describe("GET /api/topics ", () => {
-  it("responds with an array of objects with 'slug: description' properties", () => {
+  it("returns an object", () => {
     return request(app)
       .get("/api/topics")
       .then((response) => {
         const { body } = response;
-        expect(body.topics).toBeInstanceOf(Array);
+        expect(body.topics).toBeInstanceOf(Object);
         body.topics.forEach((topic) => {
           expect(topic).toEqual(
             expect.objectContaining({
               slug: expect.any(String),
-              description: expect.any(String),
+              description: expect.any(String)
             })
           );
         });
