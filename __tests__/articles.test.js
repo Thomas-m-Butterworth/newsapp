@@ -27,11 +27,24 @@ describe("GET /api/articles/:article_id ", () => {
               author: "icellusedkars",
               body: "some gifs",
               created_at: "2020-11-03T09:12:00.000Z",
-              votes: 0, 
+              votes: 0,
             }
           ))
       });
   });
+})
+
+describe("PATCH /api/articles/:article_id ", () => {
+  test("Responds with updated article when votes_inc sent, status 201", () => {
+    const inc_votes = 5;
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes })
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.article.votes).toBe(105);
+      });
+  })
 })
 
 // GET ALL Articles Testing
@@ -42,6 +55,7 @@ describe("GET /api/articles ", () => {
       .then((response) => {
         const { body } = response;
         expect(body.articles).toBeInstanceOf(Object);
+        // [TO DO] ADD length check on body
         body.articles.forEach((article) => {
           expect(article).toEqual(
             expect.objectContaining({
@@ -61,13 +75,13 @@ describe("GET /api/articles ", () => {
       .get("/api/articles")
       .then((response) => {
         const { body } = response;
-        expect([{body}]).toBeSortedBy('date created', {descending: true})
+        expect([{ body }]).toBeSortedBy('date created', { descending: true })
       })
   })
 });
 
 // ERROR HANDLING
-describe("GET /api/articles/:article_id ERRORS", () => {
+describe("/api/articles/:article_id ERRORS", () => {
   test("returns a status 404 and not found an article_id that doesn't exist in the database", async () => {
     const test = await request(app)
       .get("/api/articles/9481")
@@ -79,5 +93,13 @@ describe("GET /api/articles/:article_id ERRORS", () => {
       .get("/api/articles/not-valid-id")
       .expect(400);
     expect(test.body.msg).toBe("Bad request")
+  })
+  test("404 ERROR || PATCH /api/articles/:article_id", async () => {
+    const inc_votes = 10
+    const test = await request(app)
+      .patch("/api/articles/9481")
+      .send({ inc_votes })
+      .expect(404);
+    expect(test.body.msg).toBe("No article found for article_id: 9481")
   })
 })
