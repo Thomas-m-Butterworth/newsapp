@@ -1,4 +1,4 @@
-const { selectArticleID, selectAllArticles, updateArticleByID, createComment } = require("../models/articles.model");
+const { selectArticleID, selectAllArticles, updateArticleByID } = require("../models/articles.model");
 
 exports.getArticleID = async (req, res, next) => {
     try {
@@ -25,13 +25,3 @@ exports.patchArticle = (req, res, next) => {
         })
         .catch(next)
 }
-
-exports.postComment = (req, res, next) => {
-    const { article_id } = req.params;
-    const { username, body } = req.body;
-    createComment(article_id, username, body)
-        .then((data) => {
-            res.status(201).send({ comment: data });
-        })
-        .catch(next);
-};
