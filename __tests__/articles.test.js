@@ -153,4 +153,11 @@ describe("GET /api/articles ", () => {
         expect([{ body }]).toBeSortedBy('date created', { descending: true })
       })
   })
+
+// ALL ARTICLES QUERIES
+// describe("GET api/articles || QUERIES ||", () => {
+//   it("returns a object correctly sorted by the appropiate queries || STATUS 200", () => {
+//     r
+//   })
+// })
 });
