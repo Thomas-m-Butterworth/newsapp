@@ -55,7 +55,6 @@ describe("PATCH /api/articles/:article_id ", () => {
       .send({ inc_votes })
       .expect(201)
       .then(({ body }) => {
-        console.log(body.article)
         expect(body.article).toEqual(
           expect.objectContaining(
             {
@@ -77,7 +76,6 @@ describe("PATCH /api/articles/:article_id ", () => {
       .send({ inc_votes })
       .expect(201)
       .then(({ body }) => {
-        console.log(body.article)
         expect(body.article).toEqual(
           expect.objectContaining(
             {
@@ -100,6 +98,7 @@ describe("PATCH /api/articles/:article_id ", () => {
       .expect(404);
     expect(test.body.msg).toBe("No article found for article_id: 9481")
   })
+
   test('PATCH Error when sent an invalid ID || STATUS 400', async () => {
     const inc_votes = 'words word words'
     const test = await request(app)
@@ -125,7 +124,7 @@ describe("GET /api/articles ", () => {
       .get("/api/articles")
       .then((response) => {
         const { body } = response;
-        expect(body.articles).toBeInstanceOf(Object);
+        expect(body.articles).toBeInstanceOf(Array);
         // [TO DO] ADD length check on body
         body.articles.forEach((article) => {
           expect(article).toEqual(
@@ -223,5 +222,54 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(testComment)
       .expect(400)
         expect(test.body.msg).toBe("Bad request")
+=======
+describe("GET /api/articles/:article_id/comments", () => {
+  it("returns an array of comments from the article id || STATUS 200", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .then((response) => {
+        const { body } = response;
+        expect(body.comments).toBeInstanceOf(Array);
+        body.comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining(
+              {
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              article_id: 1,
+            }
+            )
+          );
+        });
+        expect(body.comments[0]).toMatchObject(
+          {
+            body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+            votes: 14,
+            author: "butter_bridge",
+            article_id: 1,
+            created_at: "2020-10-31T03:03:00.000Z",
+          }
+        )
+      });
+  });
+    test("returns an error for an article_id that doesn't exist in the database || STATUS 200", async () => {
+    const test = await request(app)
+      .get("/api/articles/2/comments")
+      .expect(200);
+    expect(test.body.msg).toBe(`No comments found for article_id: 2`)
+  });
+  test("returns an error for an article_id that doesn't exist in the database || STATUS 404", async () => {
+    const test = await request(app)
+      .get("/api/articles/42424242/comments")
+      .expect(404);
+    expect(test.body.msg).toBe("No article found for article_id: 42424242")
+  });
+  test("returns a 400 error when an invalid ID is used", async () => {
+    const test = await request(app)
+      .get("/api/articles/not-valid-id/comments")
+      .expect(400);
+    expect(test.body.msg).toBe("Bad request")
   })
 });

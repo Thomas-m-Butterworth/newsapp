@@ -1,4 +1,5 @@
-const { selectArticleID, selectAllArticles, updateArticleByID, createComment } = require("../models/articles.model");
+
+const { selectArticleID, selectAllArticles, updateArticleByID, selectArticleComments, createComment } = require("../models/articles.model");
 
 exports.getArticleID = async (req, res, next) => {
     try {
@@ -34,4 +35,14 @@ exports.postComment = (req, res, next) => {
             res.status(201).send({ comment: data });
         })
         .catch(next);
+};
+
+exports.getArticleComments = async (req, res, next) => {
+    try {
+        const { article_id } = req.params;
+        const comments = await selectArticleComments(article_id)
+        res.status(200).send({ comments })
+    } catch (err) {
+        next(err);
+    }
 };
