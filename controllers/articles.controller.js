@@ -1,4 +1,5 @@
-const { selectArticleID, selectAllArticles, updateArticleByID, selectArticleComments } = require("../models/articles.model");
+
+const { selectArticleID, selectAllArticles, updateArticleByID, selectArticleComments, createComment } = require("../models/articles.model");
 
 exports.getArticleID = async (req, res, next) => {
     try {
@@ -20,12 +21,21 @@ exports.patchArticle = (req, res, next) => {
     const { article_id } = req.params;
     const { inc_votes } = req.body;
     updateArticleByID(article_id, inc_votes)
-
-    .then((article) => {
-        res.status(201).send({article})
-    })
-    .catch(next)
+        .then((article) => {
+            res.status(201).send({ article })
+        })
+        .catch(next)
 }
+
+exports.postComment = (req, res, next) => {
+    const { article_id } = req.params;
+    const { username, body } = req.body;
+    createComment(article_id, username, body)
+        .then((data) => {
+            res.status(201).send({ comment: data });
+        })
+        .catch(next);
+};
 
 exports.getArticleComments = async (req, res, next) => {
     try {

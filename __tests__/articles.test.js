@@ -55,6 +55,7 @@ describe("PATCH /api/articles/:article_id ", () => {
       .send({ inc_votes })
       .expect(201)
       .then(({ body }) => {
+        console.log(body.article)
         expect(body.article).toEqual(
           expect.objectContaining(
             {
@@ -76,6 +77,7 @@ describe("PATCH /api/articles/:article_id ", () => {
       .send({ inc_votes })
       .expect(201)
       .then(({ body }) => {
+        console.log(body.article)
         expect(body.article).toEqual(
           expect.objectContaining(
             {
@@ -90,7 +92,14 @@ describe("PATCH /api/articles/:article_id ", () => {
           ))
       });
   })
-
+  test("returns an error for an article_id that doesn't exist in the database || STATUS 404", async () => {
+    const inc_votes = 10
+    const test = await request(app)
+      .patch("/api/articles/9481")
+      .send({ inc_votes })
+      .expect(404);
+    expect(test.body.msg).toBe("No article found for article_id: 9481")
+  })
   test('PATCH Error when sent an invalid ID || STATUS 400', async () => {
     const inc_votes = 'words word words'
     const test = await request(app)
@@ -116,7 +125,7 @@ describe("GET /api/articles ", () => {
       .get("/api/articles")
       .then((response) => {
         const { body } = response;
-        expect(body.articles).toBeInstanceOf(Array);
+        expect(body.articles).toBeInstanceOf(Object);
         // [TO DO] ADD length check on body
         body.articles.forEach((article) => {
           expect(article).toEqual(
@@ -146,53 +155,73 @@ describe("GET /api/articles ", () => {
   })
 });
 
-describe("GET /api/articles/:article_id/comments", () => {
-  it("returns an array of comments from the article id || STATUS 200", () => {
+// POST COMMENTS
+describe("POST /api/articles/:article_id/comments", () => {
+  it("takes a request with properties username and body and respond with the comment || STATUS 201", () => {
+    const testComment = {
+      username: "rogersop",
+      body: "Whats my age again"
+    };
     return request(app)
-      .get("/api/articles/1/comments")
-      .then((response) => {
-        const { body } = response;
-        expect(body.comments).toBeInstanceOf(Array);
-        body.comments.forEach((comment) => {
-          expect(comment).toEqual(
-            expect.objectContaining(
-              {
-              votes: expect.any(Number),
-              created_at: expect.any(String),
-              author: expect.any(String),
-              body: expect.any(String),
-              article_id: 1,
-            }
-            )
-          );
-        });
-        expect(body.comments[0]).toMatchObject(
+      .post("/api/articles/2/comments")
+      .send(testComment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toMatchObject(
           {
-            body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
-            votes: 14,
-            author: "butter_bridge",
-            article_id: 1,
-            created_at: "2020-10-31T03:03:00.000Z",
+            comment_id: expect.any(Number),
+            body: "Whats my age again",
+            votes: 0,
+            author: "rogersop",
+            article_id: 2,
+            created_at: expect.any(String)
           }
-        )
+        );
       });
   });
-    test("returns an error for an article_id that doesn't exist in the database || STATUS 200", async () => {
+
+  it("returns an error for an article_id that doesn't exist in the database || STATUS 400", async () => {
+    const testComment = {
+      username: "rogersop",
+      body: "Whats my age again"
+    };
     const test = await request(app)
-      .get("/api/articles/2/comments")
-      .expect(200);
-    expect(test.body.msg).toBe(`No comments found for article_id: 2`)
-  });
-  test("returns an error for an article_id that doesn't exist in the database || STATUS 404", async () => {
+      .post("/api/articles/9148/comments")
+      .send(testComment)
+      .expect(400)
+        expect(test.body.msg).toBe("Bad request")
+  })
+  it("returns an error for an invalid ID || STATUS 400", async () => {
+    const testComment = {
+      username: "rogersop",
+      body: "Whats my age again"
+    };
     const test = await request(app)
-      .get("/api/articles/42424242/comments")
-      .expect(404);
-    expect(test.body.msg).toBe("No article found for article_id: 42424242")
-  });
-  test("returns a 400 error when an invalid ID is used", async () => {
+      .post("/api/articles/not_a_valid_id/comments")
+      .send(testComment)
+      .expect(400)
+        expect(test.body.msg).toBe("Bad request")
+  })
+  it("returns custom error when an empty body is submitted || STATUS 400", async () => {
+    const testComment = {
+      username: "rogersop",
+      body: ""
+    };
     const test = await request(app)
-      .get("/api/articles/not-valid-id/comments")
-      .expect(400);
-    expect(test.body.msg).toBe("Bad request")
+      .post("/api/articles/2/comments")
+      .send(testComment)
+      .expect(400)
+        expect(test.body.msg).toBe("Blank comments are not accepted")
+  })
+  it("returns an error when an invalid username is submitted || STATUS 400", async () => {
+    const testComment = {
+      username: "MarkHoppus",
+      body: "it was a friday night"
+    };
+    const test = await request(app)
+      .post("/api/articles/2/comments")
+      .send(testComment)
+      .expect(400)
+        expect(test.body.msg).toBe("Bad request")
   })
 });
