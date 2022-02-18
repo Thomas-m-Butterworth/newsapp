@@ -157,7 +157,7 @@ describe("GET /api/articles ", () => {
 
 // POST COMMENTS
 describe("POST /api/articles/:article_id/comments", () => {
-  it("takes a request with properties username and body and respond with the comment || STATUS 200", () => {
+  it("takes a request with properties username and body and respond with the comment || STATUS 201", () => {
     const testComment = {
       username: "rogersop",
       body: "Whats my age again"
