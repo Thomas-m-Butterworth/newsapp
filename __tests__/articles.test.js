@@ -90,6 +90,14 @@ describe("PATCH /api/articles/:article_id ", () => {
           ))
       });
   })
+  test("returns an error for an article_id that doesn't exist in the database || STATUS 404", async () => {
+    const inc_votes = 10
+    const test = await request(app)
+      .patch("/api/articles/9481")
+      .send({ inc_votes })
+      .expect(404);
+    expect(test.body.msg).toBe("No article found for article_id: 9481")
+  })
 
   test('PATCH Error when sent an invalid ID || STATUS 400', async () => {
     const inc_votes = 'words word words'
@@ -97,7 +105,7 @@ describe("PATCH /api/articles/:article_id ", () => {
       .patch('/api/articles/1')
       .send({ inc_votes })
       .expect(400);
-      expect(test.body.msg).toBe("Bad request")
+    expect(test.body.msg).toBe("Bad request")
   })
   test('PATCH Error when sent an empty ID || STATUS 400', async () => {
     const inc_votes = {}
@@ -105,7 +113,7 @@ describe("PATCH /api/articles/:article_id ", () => {
       .patch('/api/articles/1')
       .send({ inc_votes })
       .expect(400);
-      expect(test.body.msg).toBe("Bad request")
+    expect(test.body.msg).toBe("Bad request")
   })
 })
 
@@ -122,14 +130,14 @@ describe("GET /api/articles ", () => {
           expect(article).toEqual(
             expect.objectContaining(
               {
-              author: expect.any(String),
-              title: expect.any(String),
-              article_id: expect.any(Number),
-              topic: expect.any(String),
-              created_at: expect.any(String),
-              votes: expect.any(Number),
-              comment_count: expect.any(Number),
-            }
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                comment_count: expect.any(Number),
+              }
             )
           );
         });
@@ -146,6 +154,75 @@ describe("GET /api/articles ", () => {
   })
 });
 
+// POST COMMENTS
+describe("POST /api/articles/:article_id/comments", () => {
+  it("takes a request with properties username and body and respond with the comment || STATUS 201", () => {
+    const testComment = {
+      username: "rogersop",
+      body: "Whats my age again"
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(testComment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toMatchObject(
+          {
+            comment_id: expect.any(Number),
+            body: "Whats my age again",
+            votes: 0,
+            author: "rogersop",
+            article_id: 2,
+            created_at: expect.any(String)
+          }
+        );
+      });
+  });
+
+  it("returns an error for an article_id that doesn't exist in the database || STATUS 400", async () => {
+    const testComment = {
+      username: "rogersop",
+      body: "Whats my age again"
+    };
+    const test = await request(app)
+      .post("/api/articles/9148/comments")
+      .send(testComment)
+      .expect(400)
+        expect(test.body.msg).toBe("Bad request")
+  })
+  it("returns an error for an invalid ID || STATUS 400", async () => {
+    const testComment = {
+      username: "rogersop",
+      body: "Whats my age again"
+    };
+    const test = await request(app)
+      .post("/api/articles/not_a_valid_id/comments")
+      .send(testComment)
+      .expect(400)
+        expect(test.body.msg).toBe("Bad request")
+  })
+  it("returns custom error when an empty body is submitted || STATUS 400", async () => {
+    const testComment = {
+      username: "rogersop",
+      body: ""
+    };
+    const test = await request(app)
+      .post("/api/articles/2/comments")
+      .send(testComment)
+      .expect(400)
+        expect(test.body.msg).toBe("Blank comments are not accepted")
+  })
+  it("returns an error when an invalid username is submitted || STATUS 400", async () => {
+    const testComment = {
+      username: "MarkHoppus",
+      body: "it was a friday night"
+    };
+    const test = await request(app)
+      .post("/api/articles/2/comments")
+      .send(testComment)
+      .expect(400)
+        expect(test.body.msg).toBe("Bad request")
+=======
 describe("GET /api/articles/:article_id/comments", () => {
   it("returns an array of comments from the article id || STATUS 200", () => {
     return request(app)
