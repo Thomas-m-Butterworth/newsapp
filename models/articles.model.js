@@ -51,7 +51,6 @@ exports.updateArticleByID = async (article_id, inc_votes) => {
 }
 
 exports.selectArticleComments = async (article_id) => {
-    console.log(article_id)
     const comments = await db
         .query(`
         SELECT * FROM comments
