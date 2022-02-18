@@ -41,11 +41,28 @@ exports.updateArticleByID = async (article_id, inc_votes) => {
         WHERE article_id = $2
         RETURNING *;
         `, [inc_votes, article_id])
-        if (articleVote.rows.length === 0) {
-            return Promise.reject({
-                status: 404,
-                msg: `No article found for article_id: ${article_id}`,
-            });
-        }
-        return articleVote.rows[0]
+    if (articleVote.rows.length === 0) {
+        return Promise.reject({
+            status: 404,
+            msg: `No article found for article_id: ${article_id}`,
+        });
+    }
+    return articleVote.rows[0]
 }
+
+exports.selectArticleComments = async (article_id) => {
+    console.log(article_id)
+    const comments = await db
+        .query(`
+        SELECT * FROM comments
+        WHERE article_id = $1;
+        `, [article_id])
+    if (comments.length === 0) {
+        return Promise.reject({
+            status: 404,
+            msg: `No article found for article_id: ${article_id}`,
+        });
+    }
+        return comments.rows
+}
+

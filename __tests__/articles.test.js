@@ -154,3 +154,36 @@ describe("GET /api/articles ", () => {
       })
   })
 });
+
+describe.only("GET /api/articles/:article_id/comments", () => {
+  it("returns an object of comments from the article id || STATUS 200", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .then((response) => {
+        const { body } = response;
+        expect(body.comments).toBeInstanceOf(Object);
+        body.comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining(
+              {
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              article_id: 1,
+            }
+            )
+          );
+        });
+        expect(body.comments[0]).toMatchObject(
+          {
+            body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+            votes: 14,
+            author: "butter_bridge",
+            article_id: 1,
+            created_at: "2020-10-31T03:03:00.000Z",
+          }
+        )
+      });
+  });
+});
