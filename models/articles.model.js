@@ -50,21 +50,19 @@ exports.updateArticleByID = async (article_id, inc_votes) => {
         return articleVote.rows[0]
 }
 
-exports.createComment = async (body, username, article_id) => {
-    console.log(`article_id: ${article_id} || type: ${typeof article_id}`)
-    console.log(`article_id: ${username} || type: ${typeof username}`)
-    console.log(`article_id: ${body} || type: ${typeof body}`)
-    const {newComment} = await db
+exports.createComment = async (article_id, username, body ) => {
+    if (!body) {
+        return Promise.reject({
+            status: 400,
+            msg: "Blank comments are not accepted"
+        })
+    }
+    
+    const newComment = await db
         .query(`
         INSERT INTO comments (body, author, article_id)
         VALUES ($1, $2, $3)
-        RETURNING *;
+        RETURNING *; 
         `, [body, username, article_id])
-        if (newComment.rows.length === 0) {
-            return Promise.reject({
-                status: 404,
-                msg: `No article found for article_id: ${article_id}`,
-            });
-        }
-        return newComment
+        return newComment.rows[0]
 }

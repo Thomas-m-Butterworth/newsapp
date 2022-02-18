@@ -92,7 +92,7 @@ describe("PATCH /api/articles/:article_id ", () => {
           ))
       });
   })
-  test("PATCH /api/articles/:article_id || STATUS 404", async () => {
+  test("returns an error for an article_id that doesn't exist in the database || STATUS 404", async () => {
     const inc_votes = 10
     const test = await request(app)
       .patch("/api/articles/9481")
@@ -156,27 +156,72 @@ describe("GET /api/articles ", () => {
 });
 
 // POST COMMENTS
-// describe.only("POST /api/articles/:article_id/comments", () => {
-//   it("should take a request with properties username and body and respond with the comment posted", () => {
-//     const testComment = {
-//       username: "MarkHoppus182",
-//       body: "Whats my age again"
-//     };
-//     return request(app)
-//       .post("/api/articles/2/comments")
-//       .send(testComment)
-//       .expect(201)
-//       .then(({ body }) => {
-//         expect(body.comment).toMatchObject(
-//           {
-//             comment_id: expect.any(Number),
-//             body: "Whats my age again",
-//             votes: 0,
-//             author: "MarkHoppus182",
-//             article_id: 2,
-//             created_at: expect.any(String)
-//           }
-//         );
-//       });
-//   });
-// });
+describe("POST /api/articles/:article_id/comments", () => {
+  it("takes a request with properties username and body and respond with the comment || STATUS 200", () => {
+    const testComment = {
+      username: "rogersop",
+      body: "Whats my age again"
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(testComment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toMatchObject(
+          {
+            comment_id: expect.any(Number),
+            body: "Whats my age again",
+            votes: 0,
+            author: "rogersop",
+            article_id: 2,
+            created_at: expect.any(String)
+          }
+        );
+      });
+  });
+
+  it("returns an error for an article_id that doesn't exist in the database || STATUS 400", async () => {
+    const testComment = {
+      username: "rogersop",
+      body: "Whats my age again"
+    };
+    const test = await request(app)
+      .post("/api/articles/9148/comments")
+      .send(testComment)
+      .expect(400)
+        expect(test.body.msg).toBe("Bad request")
+  })
+  it("returns an error for an invalid ID || STATUS 400", async () => {
+    const testComment = {
+      username: "rogersop",
+      body: "Whats my age again"
+    };
+    const test = await request(app)
+      .post("/api/articles/not_a_valid_id/comments")
+      .send(testComment)
+      .expect(400)
+        expect(test.body.msg).toBe("Bad request")
+  })
+  it("returns custom error when an empty body is submitted || STATUS 400", async () => {
+    const testComment = {
+      username: "rogersop",
+      body: ""
+    };
+    const test = await request(app)
+      .post("/api/articles/2/comments")
+      .send(testComment)
+      .expect(400)
+        expect(test.body.msg).toBe("Blank comments are not accepted")
+  })
+  it("returns an error when an invalid username is submitted || STATUS 400", async () => {
+    const testComment = {
+      username: "MarkHoppus",
+      body: "it was a friday night"
+    };
+    const test = await request(app)
+      .post("/api/articles/2/comments")
+      .send(testComment)
+      .expect(400)
+        expect(test.body.msg).toBe("Bad request")
+  })
+});
