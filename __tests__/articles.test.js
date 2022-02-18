@@ -106,7 +106,7 @@ describe("PATCH /api/articles/:article_id ", () => {
       .patch('/api/articles/1')
       .send({ inc_votes })
       .expect(400);
-      expect(test.body.msg).toBe("Bad request")
+    expect(test.body.msg).toBe("Bad request")
   })
   test('PATCH Error when sent an empty ID || STATUS 400', async () => {
     const inc_votes = {}
@@ -114,7 +114,7 @@ describe("PATCH /api/articles/:article_id ", () => {
       .patch('/api/articles/1')
       .send({ inc_votes })
       .expect(400);
-      expect(test.body.msg).toBe("Bad request")
+    expect(test.body.msg).toBe("Bad request")
   })
 })
 
@@ -131,14 +131,14 @@ describe("GET /api/articles ", () => {
           expect(article).toEqual(
             expect.objectContaining(
               {
-              author: expect.any(String),
-              title: expect.any(String),
-              article_id: expect.any(Number),
-              topic: expect.any(String),
-              created_at: expect.any(String),
-              votes: expect.any(Number),
-              comment_count: expect.any(Number),
-            }
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                comment_count: expect.any(Number),
+              }
             )
           );
         });
@@ -154,3 +154,29 @@ describe("GET /api/articles ", () => {
       })
   })
 });
+
+// POST COMMENTS
+// describe.only("POST /api/articles/:article_id/comments", () => {
+//   it("should take a request with properties username and body and respond with the comment posted", () => {
+//     const testComment = {
+//       username: "MarkHoppus182",
+//       body: "Whats my age again"
+//     };
+//     return request(app)
+//       .post("/api/articles/2/comments")
+//       .send(testComment)
+//       .expect(201)
+//       .then(({ body }) => {
+//         expect(body.comment).toMatchObject(
+//           {
+//             comment_id: expect.any(Number),
+//             body: "Whats my age again",
+//             votes: 0,
+//             author: "MarkHoppus182",
+//             article_id: 2,
+//             created_at: expect.any(String)
+//           }
+//         );
+//       });
+//   });
+// });
