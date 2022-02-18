@@ -92,14 +92,7 @@ describe("PATCH /api/articles/:article_id ", () => {
           ))
       });
   })
-  test("PATCH /api/articles/:article_id || STATUS 404", async () => {
-    const inc_votes = 10
-    const test = await request(app)
-      .patch("/api/articles/9481")
-      .send({ inc_votes })
-      .expect(404);
-    expect(test.body.msg).toBe("No article found for article_id: 9481")
-  })
+
   test('PATCH Error when sent an invalid ID || STATUS 400', async () => {
     const inc_votes = 'words word words'
     const test = await request(app)
@@ -155,7 +148,7 @@ describe("GET /api/articles ", () => {
   })
 });
 
-describe.only("GET /api/articles/:article_id/comments", () => {
+describe("GET /api/articles/:article_id/comments", () => {
   it("returns an object of comments from the article id || STATUS 200", () => {
     return request(app)
       .get("/api/articles/1/comments")
@@ -186,4 +179,16 @@ describe.only("GET /api/articles/:article_id/comments", () => {
         )
       });
   });
+  test("returns an error for an article_id that doesn't exist in the database || STATUS 404", async () => {
+    const test = await request(app)
+      .get("/api/articles/42424242/comments")
+      .expect(404);
+    expect(test.body.msg).toBe("No article found for article_id: 42424242")
+  })
+  test("returns a 400 error when an invalid ID is used", async () => {
+    const test = await request(app)
+      .get("/api/articles/not-valid-id/comments")
+      .expect(400);
+    expect(test.body.msg).toBe("Bad request")
+  })
 });

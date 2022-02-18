@@ -56,7 +56,7 @@ exports.selectArticleComments = async (article_id) => {
         SELECT * FROM comments
         WHERE article_id = $1;
         `, [article_id])
-    if (comments.length === 0) {
+    if (comments.rows.length === 0) {
         return Promise.reject({
             status: 404,
             msg: `No article found for article_id: ${article_id}`,
