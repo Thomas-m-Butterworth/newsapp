@@ -16,7 +16,6 @@ app.get('/api/articles', getAllArticles)    // All
 app.get('/api/articles/:article_id', getArticleID);
 app.get('/api/articles/:article_id/comments', getArticleComments)
 app.patch('/api/articles/:article_id', patchArticle);
-app.post('/api/articles/:article_id/comments', postComment);
 // GET Users
 app.get('/api/users', getUsers)
 
