@@ -77,7 +77,6 @@ describe("PATCH /api/articles/:article_id ", () => {
       .send({ inc_votes })
       .expect(201)
       .then(({ body }) => {
-        console.log(body.article)
         expect(body.article).toEqual(
           expect.objectContaining(
             {
@@ -118,46 +117,109 @@ describe("PATCH /api/articles/:article_id ", () => {
   })
 })
 
-// GET ALL Articles Testing
-describe("GET /api/articles ", () => {
-  it("returns an object of articles || STATUS 200", () => {
-    return request(app)
-      .get("/api/articles")
-      .then((response) => {
-        const { body } = response;
-        expect(body.articles).toBeInstanceOf(Object);
-        // [TO DO] ADD length check on body
-        body.articles.forEach((article) => {
-          expect(article).toEqual(
-            expect.objectContaining(
-              {
-                author: expect.any(String),
-                title: expect.any(String),
-                article_id: expect.any(Number),
-                topic: expect.any(String),
-                created_at: expect.any(String),
-                votes: expect.any(Number),
-                comment_count: expect.any(Number),
-              }
-            )
-          );
-        });
-        expect(body.articles[0].comment_count).toBe(2)
-      });
-  });
-  it('is displayed in decending order by date_created', () => {
-    return request(app)
-      .get("/api/articles")
-      .then((response) => {
-        const { body } = response;
-        expect([{ body }]).toBeSortedBy('date created', { descending: true })
-      })
-  })
+// // GET ALL Articles Testing
+// describe("GET /api/articles ", () => {
+//   it("returns an object of articles || STATUS 200", () => {
+//     return request(app)
+//       .get("/api/articles")
+//       .then((response) => {
+//         const { body } = response;
+//         expect(body.articles).toBeInstanceOf(Object);
+//         // [TO DO] ADD length check on body
+//         body.articles.forEach((article) => {
+//           expect(article).toMatchObject(
+//               {
+//                 author: expect.any(String),
+//                 title: expect.any(String),
+//                 article_id: expect.any(Number),
+//                 topic: expect.any(String),
+//                 created_at: expect.any(String),
+//                 votes: expect.any(Number),
+//               }
+//             )
+//         });
+//       });
+//   });
+//   it('is displayed in decending order by date_created', () => {
+//     return request(app)
+//       .get("/api/articles")
+//       .then((response) => {
+//         const { body } = response;
+//         expect([{ body }]).toBeSortedBy('date created', { descending: true })
+//       })
+//   })
 
 // ALL ARTICLES QUERIES
-// describe("GET api/articles || QUERIES ||", () => {
-//   it("returns a object correctly sorted by the appropiate queries || STATUS 200", () => {
-//     r
-//   })
-// })
-});
+describe("GET - /api/articles (QUERIES)", () => {
+  test("status: 200 responds with array of articles,  sorted by date, in descending order, with a comment count", () => {
+    return request(app)
+      .get('/api/articles')
+      .expect(200)
+      .then(({ body }) => {
+        body.articles.forEach(article => {
+          expect(article).toMatchObject(
+            {
+              article_id: expect.any(Number),
+              title: expect.any(String),
+              topic: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(String)
+            }
+          )
+        })
+        expect([{ body }]).toBeSortedBy('created_at', {
+          descending: true,
+        })
+      })
+  })
+  test("status: 200 sorts by sort_by", () => {
+    return request(app)
+      .get('/api/articles?sort_by=title&order=asc&topic=mitch')
+      .expect(200)
+      .then(({ body }) => {
+        body.articles.forEach(article => {
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: 'mitch',
+            author: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(String)
+          })
+        })
+
+        expect([{ body }]).toBeSortedBy('title', {
+          ascending: true,
+        })
+      })
+  })
+  test("status: 400 invalid sort query", () => {
+    return request(app)
+      .get('/api/articles?sort_by=invalid_value')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid SORT query! Please choose from title, topic, author, created_at, votes, or article_id')
+      })
+  })
+  test("status: 400 invalid topic query", () => {
+    return request(app)
+      .get('/api/articles?sort_by=title&topic=invalid_topic')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('No topic found')
+      })
+  })
+  test("status: 400 invalid order query", () => {
+    return request(app)
+      .get('/api/articles?sort_by=title&order=invalid_query')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Invalid ORDER query! Please choose between asc and desc')
+      })
+  })
+})

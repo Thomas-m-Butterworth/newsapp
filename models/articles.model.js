@@ -19,18 +19,38 @@ exports.selectArticleID = async (article_id) => {
     return article
 };
 
-exports.selectAllArticles = async () => {
-    const articles = await db
-        .query(`
-        SELECT articles.*,
-        COUNT(comments.comment_id)::INT AS comment_count
-        FROM articles
-        LEFT JOIN comments ON articles.article_id = comments.article_id
-        GROUP BY articles.article_id
-        ORDER BY created_at DESC;
-                    `)
-    const results = articles.rows
-    return results
+exports.selectAllArticles = (sort_by = 'created_at', order = 'asc', topic) => {
+    if (!['title', 'topic', 'author', 'created_at', 'votes', 'article_id'].includes(sort_by)) {
+        return Promise.reject({
+            status: 400,
+            msg: 'Invalid SORT query! Please choose from title, topic, author, created_at, votes, or article_id'
+        });
+    }
+    if (!['asc', 'desc'].includes(order)) {
+        return Promise.reject({
+            status: 400,
+            msg: 'Invalid ORDER query! Please choose between asc and desc' 
+        })
+    }
+    const queryValues = []
+    let queryStr = `
+    SELECT articles.*,
+    COUNT(comments.article_id) AS comment_count FROM articles 
+    LEFT JOIN comments ON articles.article_id = comments.article_id`
+
+    if (topic) {
+        queryValues.push(topic)
+        queryStr += ` WHERE topic = $1`
+    }
+    order = order.toUpperCase()
+    queryStr += ` GROUP BY articles.article_id
+    ORDER BY ${sort_by} ${order};`
+    return db.query(queryStr, queryValues).then(({ rows }) => {
+        if (rows.length === 0) {
+            return Promise.reject({ status: 400, msg: 'No topic found' })
+        }
+        return rows;
+    })
 }
 
 exports.updateArticleByID = async (article_id, inc_votes) => {
@@ -41,11 +61,11 @@ exports.updateArticleByID = async (article_id, inc_votes) => {
         WHERE article_id = $2
         RETURNING *;
         `, [inc_votes, article_id])
-        if (articleVote.rows.length === 0) {
-            return Promise.reject({
-                status: 404,
-                msg: `No article found for article_id: ${article_id}`,
-            });
-        }
-        return articleVote.rows[0]
+    if (articleVote.rows.length === 0) {
+        return Promise.reject({
+            status: 404,
+            msg: `No article found for article_id: ${article_id}`,
+        });
+    }
+    return articleVote.rows[0]
 }
