@@ -11,10 +11,12 @@ exports.getArticleID = async (req, res, next) => {
     }
 };
 
-exports.getAllArticles = (req, res) => {
-    selectAllArticles().then((articles) => {
+exports.getAllArticles = (req, res, next) => {
+    const {sort_by, order, topic} = req.query;
+    selectAllArticles(sort_by, order, topic).then((articles) => {
         res.status(200).send({ articles })
     })
+    .catch(next)
 }
 
 exports.patchArticle = (req, res, next) => {
