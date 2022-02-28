@@ -3,6 +3,7 @@ const { getTopics } = require("./controllers/topics.controller");
 const { getArticleID, getAllArticles, patchArticle, getArticleComments, postComment, deleteCommentById} = require("./controllers/articles.controller");
 const {getUsers} = require('./controllers/users.controllers')
 const { PSQLerror, handle500s, customError } = require('./error')
+const { getEndpoints } = require('./controllers/enpoints.controller')
 const app = express();
 
 // Parsing
@@ -20,6 +21,8 @@ app.delete('/api/comments/:comment_id', deleteCommentById)
 app.patch('/api/articles/:article_id', patchArticle);
 // GET Users
 app.get('/api/users', getUsers)
+// GET endpoints
+app.get('/api', getEndpoints)
 
 // ERROR HANDLING
 app.use(PSQLerror)
