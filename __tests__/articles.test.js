@@ -334,3 +334,28 @@ describe("DELETE - /api/comments/:comment_id", () => {
       })
   })
 })
+
+describe("GET - /api", () =>{
+  test("status: 200, responds with json describing all the endpoints", () => {
+      return request(app)
+      .get('/api')
+      .expect(200)
+      .then(({body}) => {
+          console.log(body)
+          expect(body).toEqual(expect.objectContaining({
+              'GET /api': expect.any(Object),
+              'GET /api/topics': expect.any(Object),
+              'GET /api/articles': expect.any(Object),
+              'GET /api/articles/:article_id': expect.any(Object),
+              'PATCH /api/articles/:article_id': expect.any(Object),
+              'GET /api/users': expect.any(Object),
+              'GET /api/articles/:article_id/comments': expect.any(Object),
+              'POST /api/articles/:article_id/comments': expect.any(Object),
+              'DELETE /api/comments/:comment_id': expect.any(Object),
+
+
+          })
+      )
+  })
+})
+})
