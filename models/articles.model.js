@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const { commentIdCheck } = require("../db/helpers/utils")
 
 exports.selectArticleID = async (article_id) => {
     const { rows } = await db.query(`
@@ -29,7 +30,7 @@ exports.selectAllArticles = (sort_by = 'created_at', order = 'asc', topic) => {
     if (!['asc', 'desc'].includes(order)) {
         return Promise.reject({
             status: 400,
-            msg: 'Invalid ORDER query! Please choose between asc and desc' 
+            msg: 'Invalid ORDER query! Please choose between asc and desc'
         })
     }
     const queryValues = []
@@ -86,7 +87,7 @@ exports.selectArticleComments = async (article_id) => {
             status: 200,
             msg: `No comments found for article_id: ${article_id}`,
         });
-    } 
+    }
     if (comments.rows.length === 0 && article.rows.length === 0) {
         return Promise.reject({
             status: 404,
@@ -95,19 +96,34 @@ exports.selectArticleComments = async (article_id) => {
     } return comments.rows
 }
 
-exports.createComment = async (article_id, username, body ) => {
+exports.createComment = async (article_id, username, body) => {
     if (!body) {
         return Promise.reject({
             status: 400,
             msg: "Blank comments are not accepted"
         })
     }
-    
+
     const newComment = await db
         .query(`
         INSERT INTO comments (body, author, article_id)
         VALUES ($1, $2, $3)
         RETURNING *; 
         `, [body, username, article_id])
-        return newComment.rows[0]
+    return newComment.rows[0]
+}
+
+exports.deleteComment = async (comment_id) => {
+    const result = await db
+    .query(`
+    DELETE FROM comments WHERE comment_id = $1
+    RETURNING *;
+    `, [comment_id])
+    if (result.rows.length === 0) {
+        return Promise.reject({
+            status: 404,
+            msg: 'ID not found'
+        })
+    }
+    return result.rows[0]
 }

@@ -1,5 +1,5 @@
 
-const { selectArticleID, selectAllArticles, updateArticleByID, selectArticleComments, createComment } = require("../models/articles.model");
+const { selectArticleID, selectAllArticles, updateArticleByID, selectArticleComments, createComment, deleteComment } = require("../models/articles.model");
 
 exports.getArticleID = async (req, res, next) => {
     try {
@@ -12,11 +12,11 @@ exports.getArticleID = async (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-    const {sort_by, order, topic} = req.query;
+    const { sort_by, order, topic } = req.query;
     selectAllArticles(sort_by, order, topic).then((articles) => {
         res.status(200).send({ articles })
     })
-    .catch(next)
+        .catch(next)
 }
 
 exports.patchArticle = (req, res, next) => {
@@ -43,8 +43,20 @@ exports.getArticleComments = async (req, res, next) => {
     try {
         const { article_id } = req.params;
         const comments = await selectArticleComments(article_id)
-        res.status(200).send({ comments })
+        res.status(200)
+            .send({ comments })
     } catch (err) {
         next(err);
     }
 };
+
+exports.deleteCommentById = async (req, res, next) => {
+    try {
+        const { comment_id } = req.params
+        const comment = await deleteComment(comment_id)
+        res.status(204)
+            .send({ comment })
+    } catch (err) {
+        next(err);
+    }
+}

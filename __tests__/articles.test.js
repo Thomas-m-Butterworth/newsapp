@@ -307,3 +307,30 @@ describe("POST /api/articles/:article_id/comments", () => {
     expect(test.body.msg).toBe("Bad request")
   })
 })
+
+describe("DELETE - /api/comments/:comment_id", () => {
+  test("204 STATUS || deletes a comment with a valid ID, responsing with a 204 status and no content", () => {
+      return request(app)
+      .delete('/api/comments/3')
+      .expect(204)
+      .then(({body}) => {
+          expect(body).toEqual({})
+      })
+  })
+  test("404 STATUS || No ID found", () => {
+      return request(app)
+      .delete('/api/comments/9999999')
+      .expect(404)
+      .then(({body}) => {
+          expect(body.msg).toBe('ID not found')
+      })
+  })
+  test("400 STATUS: invalid id", () => {
+      return request(app)
+      .delete('/api/comments/invalid_id')
+      .expect(400)
+      .then(({body}) => {
+          expect(body.msg).toBe('Bad request')
+      })
+  })
+})
