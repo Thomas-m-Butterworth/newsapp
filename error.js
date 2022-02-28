@@ -9,6 +9,9 @@ exports.PSQLerror = (err, req, res, next) => {
     if (err.code === '23503') { //FOREIGN KEY VIOLATION
         res.status(400).send({ msg: 'Bad request' })
     }
+    if (err.code === '23502') { //FOREIGN KEY VIOLATION
+        res.status(400).send({ msg: 'Bad request' })
+    }
     else {
         next(err)
     }
